@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUSKY: 0 # skip git hooks install on CI
-      # config.ts is imported by playwright.config; on CI it needs these (no fallbacks).
+      # Not secrets — throwaway test values (config.ts just needs them to import on CI).
+      # `test-bot-token` is a dummy; nothing real is leaked. Real env → use GitHub Secrets.
       MARKET_URL: http://localhost:3100
       TEST_BOT_TOKEN: test-bot-token
     steps:

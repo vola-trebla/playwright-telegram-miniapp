@@ -15,6 +15,10 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble
     env:
+      # Not secrets — throwaway test values. `test-bot-token` is a dummy: the backend boots in
+      # test mode and validates initData against this very token, which the tests sign with, so
+      # the loop closes with nothing real involved. For a real environment, drop a real token in
+      # GitHub Secrets and swap to ${{ secrets.TEST_BOT_TOKEN }}.
       MARKET_URL: http://localhost:3100
       TEST_BOT_TOKEN: test-bot-token
       HUSKY: 0 # skip git hooks install on CI
