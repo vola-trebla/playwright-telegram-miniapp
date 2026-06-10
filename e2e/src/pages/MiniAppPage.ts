@@ -3,12 +3,8 @@ import { click } from '@actions/elementActions';
 import { BasePage } from '@pages/BasePage';
 
 /**
- * Assertion-free Page Object for the Mini App (apps/backend/public).
- * Only actions + readonly locators; assertions live in specs (web-first, auto-retrying).
- * Extends BasePage (navigation via `open()`). Action methods delegate to the elementActions
- * helpers, passing each element's description — so the report reads as intent and the raw
- * Playwright calls nest inside the named step.
- * The Telegram.WebApp mock + signed initData are installed by the mini-app fixture.
+ * Assertion-free Page Object for the Mini App — locators + actions only; assertions live in specs.
+ * Actions delegate to elementActions (named steps). The Telegram mock is installed by the fixture.
  */
 export class MiniAppPage extends BasePage {
   readonly who: Locator;

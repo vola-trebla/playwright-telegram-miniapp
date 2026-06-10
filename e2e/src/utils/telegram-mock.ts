@@ -5,16 +5,9 @@ import { buildSignedInitData } from '@utils/sign-init-data';
 export type TgUser = { id: number; first_name: string; username?: string };
 
 /**
- * Make a page behave like a Telegram Mini App webview for `tgUser`:
- * - block the real telegram-web-app.js (outside Telegram it would overwrite our mock
- *   with an empty initData), keeping the suite hermetic;
- * - inject a minimal window.Telegram.WebApp + a validly signed initData BEFORE any page
- *   script runs (the app reads it synchronously at startup).
- *
- * HapticFeedback.notificationOccurred records every call into window.__haptics, so a test
- * can read it back via page.evaluate and assert the app triggered haptic feedback.
- *
- * Reused by the miniApp fixture (single page) and multi-client realtime tests (many pages).
+ * Make a page behave like a Mini App webview for `tgUser`: block the real telegram-web-app.js and
+ * inject window.Telegram.WebApp + signed initData before page scripts run. HapticFeedback calls are
+ * recorded into window.__haptics so a test can read them back via page.evaluate.
  */
 export async function installTelegramWebApp(page: Page, tgUser: TgUser): Promise<void> {
   const initData = buildSignedInitData(tgUser, config.testBotToken);

@@ -1,16 +1,9 @@
 import crypto from 'node:crypto';
 
 /**
- * Build a *validly signed* Telegram Mini App `initData` string for tests — the same
- * thing Telegram hands a Mini App on launch, so the backend's HMAC check accepts it.
- *
- * Algorithm (must match the server's validator):
- *   data_check_string = sorted "key=value" pairs (except hash), joined by "\n"
- *   secret            = HMAC_SHA256(key="WebAppData", msg=botToken)
- *   hash              = hex(HMAC_SHA256(key=secret, msg=data_check_string))
- *
- * Tamper with any field or use the wrong token → the hash won't match → backend 401.
- * That gives both the happy path (sign correctly) and the security negative (forge it).
+ * Build a validly signed Mini App `initData` for tests (HMAC must match the server's validator):
+ * secret = HMAC_SHA256("WebAppData", botToken); hash = HMAC_SHA256(secret, sorted key=value lines).
+ * Wrong field/token → hash mismatch → 401, which covers both the happy path and forgery tests.
  */
 export function buildSignedInitData(
   user: Record<string, unknown>,
