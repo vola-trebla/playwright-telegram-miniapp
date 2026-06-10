@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>giftmrkt — Mini App</title>
+    <!-- The Telegram WebApp SDK: provides window.Telegram.WebApp (initData, theme, buttons). -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">🐸 giftmrkt</div>
+      <div class="user">you: <span id="who">…</span></div>
+    </header>
+
+    <main>
+      <div class="catalog">
+        <div id="filters" class="filters"></div>
+        <section id="grid" class="grid"></section>
+      </div>
+
+      <aside class="side">
+        <h3>live feed</h3>
+        <div id="log" class="log"></div>
+        <p class="hint">
+          Tip: open this page in two tabs and buy the same gift — the WebSocket pushes
+          the “sold” event to both, and the second buy returns 409.
+        </p>
+      </aside>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

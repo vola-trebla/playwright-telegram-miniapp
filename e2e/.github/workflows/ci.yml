@@ -1,0 +1,40 @@
+name: E2E (API + initData)
+
+# The suite boots its own backend (Playwright webServer) and is fully deterministic,
+# so — unlike the old public-site setup — it can gate every PR, not just run on demand.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      # Root install provides the backend workspace the suite starts under test (tsx/express/ws).
+      - name: Install workspace deps
+        run: npm ci
+
+      - name: Install e2e deps
+        run: npm ci
+        working-directory: e2e
+
+      # API/WS tests drive Playwright's request context — no browser download needed.
+      - name: Run API + initData suite
+        run: npx playwright test --project=api
+        working-directory: e2e
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          retention-days: 7

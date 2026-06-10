@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# env / secrets
+.env
+*.env
+!*.env.example
+
+# local agent / editor config (kept local, not published)
+.claude/
+CLAUDE.md
+
+# Playwright / test artifacts
+test-results/
+playwright-report/
+blob-report/
+allure-results/
+allure-report/
+.cache/
+
+# misc
+*.log
+.DS_Store

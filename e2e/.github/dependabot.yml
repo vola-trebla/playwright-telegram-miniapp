@@ -1,0 +1,18 @@
+version: 2
+updates:
+  # npm dependencies (@playwright/test, eslint, faker, prettier, ...)
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Bundle dev-tooling bumps into one PR to cut noise.
+      dev-dependencies:
+        patterns: ['*']
+
+  # GitHub Actions versions (actions/checkout, setup-node, ...)
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly

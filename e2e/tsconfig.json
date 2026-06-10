@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "paths": {
+      "@utils/*": ["./src/utils/*"],
+      "@actions/*": ["./src/actions/*"],
+      "@data/*": ["./src/data/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@fixtures": ["./src/fixtures/index.ts"],
+      "@fixtures/*": ["./src/fixtures/*"],
+      "@services/*": ["./src/services/*"]
+    }
+  },
+  "include": ["src", "tests", "config", "*.ts"]
+}
