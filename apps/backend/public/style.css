@@ -7,10 +7,14 @@
   --muted: #8a93a6;
   --accent: #46a4ff;
 }
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
-  font: 15px/1.4 system-ui, sans-serif;
+  font:
+    15px/1.4 system-ui,
+    sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -21,8 +25,14 @@ header {
   padding: 14px 18px;
   border-bottom: 1px solid var(--line);
 }
-.brand { font-weight: 700; font-size: 18px; }
-.user { color: var(--muted); font-size: 13px; }
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+}
+.user {
+  color: var(--muted);
+  font-size: 13px;
+}
 main {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -43,18 +53,31 @@ main {
   flex-direction: column;
   gap: 8px;
 }
-.card.sold { opacity: 0.55; }
+.card.sold {
+  opacity: 0.55;
+}
 .rarity {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--muted);
 }
-.rarity.legendary { color: #ffb347; }
-.rarity.epic { color: #b888ff; }
-.rarity.rare { color: #54c6ff; }
-.name { font-weight: 600; }
-.price { color: var(--muted); font-size: 13px; }
+.rarity.legendary {
+  color: #ffb347;
+}
+.rarity.epic {
+  color: #b888ff;
+}
+.rarity.rare {
+  color: #54c6ff;
+}
+.name {
+  font-weight: 600;
+}
+.price {
+  color: var(--muted);
+  font-size: 13px;
+}
 button {
   margin-top: auto;
   padding: 8px;
@@ -65,8 +88,17 @@ button {
   font-weight: 700;
   cursor: pointer;
 }
-button:disabled { background: #2b2f38; color: var(--muted); cursor: default; }
-.side h3 { margin: 0 0 8px; font-size: 13px; color: var(--muted); text-transform: uppercase; }
+button:disabled {
+  background: #2b2f38;
+  color: var(--muted);
+  cursor: default;
+}
+.side h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 .log {
   display: flex;
   flex-direction: column;
@@ -80,9 +112,21 @@ button:disabled { background: #2b2f38; color: var(--muted); cursor: default; }
   border-left: 2px solid var(--accent);
   padding-left: 8px;
 }
-.hint { color: var(--muted); font-size: 12px; margin-top: 14px; }
-.catalog { display: flex; flex-direction: column; gap: 12px; }
-.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 14px;
+}
+.catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .chip {
   margin: 0;
   padding: 5px 12px;
@@ -94,4 +138,8 @@ button:disabled { background: #2b2f38; color: var(--muted); cursor: default; }
   font-size: 12px;
   text-transform: capitalize;
 }
-.chip.active { background: var(--accent); color: #001226; border-color: var(--accent); }
+.chip.active {
+  background: var(--accent);
+  color: #001226;
+  border-color: var(--accent);
+}
