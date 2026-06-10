@@ -12,7 +12,9 @@ export default defineConfig({
 
   // Retries reveal flakiness on CI; they do not exist to hide it.
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Tests are isolated (per-test users, collision-free gift ids), so run them in parallel.
+  // 4 matches the GitHub-hosted runner's cores; locally Playwright picks a sensible default.
+  workers: process.env.CI ? 4 : undefined,
 
   reporter: process.env.CI
     ? [['blob'], ['github'], ['allure-playwright']]

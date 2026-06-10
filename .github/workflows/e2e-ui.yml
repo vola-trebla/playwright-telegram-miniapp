@@ -2,9 +2,13 @@ name: E2E UI tests
 
 on:
   push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
+    branches: [main] # post-merge validation
+  schedule:
+    - cron: '0 3 * * *' # nightly — catches env drift / flakiness over time
+  workflow_dispatch: # run on demand
+# Deliberately NOT on pull_request: this is a test-framework repo, and e2e suites are heavy
+# and prone to flake — gating every PR on them just blocks the author. They run post-merge,
+# nightly, and on demand instead.
 
 jobs:
   ui:
