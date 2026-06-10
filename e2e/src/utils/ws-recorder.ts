@@ -2,23 +2,9 @@ import type { Page } from '@playwright/test';
 import { timeouts } from '@data/constants';
 
 /**
- * Records every WebSocket frame a page receives, so realtime tests can assert on
- * server-pushed messages (e.g. the `sold` broadcast) without hand-wiring Playwright's
- * low-level `page.on('websocket')` / `framereceived` events inside the spec.
- *
- * Why a recorder and not a bare `find`:
- * - one page receives EVERY broadcast on the backend (other parallel tests sell too),
- *   so callers pass a predicate to pick out their own frame;
- * - frames arrive asynchronously — `waitForFrame` resolves the instant a matching frame
- *   arrives (event-driven, no polling) or rejects on timeout.
- *
- * Call `recordWebSocket(page)` BEFORE `page.goto(...)` — the listener must be attached
- * before the page opens its socket, or the opening frames are missed.
- *
- * Usage:
- *   const ws = recordWebSocket(page);
- *   await page.goto('/');
- *   const sold = await ws.waitForFrame((m) => m.type === 'sold' && m.id === giftId);
+ * Records WebSocket frames a page receives so realtime tests can assert server pushes (e.g. `sold`).
+ * `waitForFrame(predicate)` resolves the instant a matching frame arrives (event-driven) or times out;
+ * the predicate picks your own frame since one page sees every broadcast. Call BEFORE page.goto.
  */
 export type WsRecorder = {
   /** All JSON frames received so far, in arrival order. */

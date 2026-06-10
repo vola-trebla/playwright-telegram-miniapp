@@ -24,33 +24,33 @@ async function useSignedMarket(
   await ctx.dispose();
 }
 
-// У нас два вида юзеров для тестов.
+// We have two kinds of test users.
 //
-// Тесты, которые НИЧЕГО не меняют (смотрят каталог, /api/me) — могут ходить под одним
-// общим юзером. Нет смысла плодить нового на каждый тест. Заводим его один раз и
-// переиспользуем. Это readUser / readMarket / readMiniApp.
+// Tests that change NOTHING (browse the catalog, /api/me) can share one user — no point
+// spawning a new one per test. Create it once and reuse it. That's readUser / readMarket /
+// readMiniApp.
 //
-// Тесты, которые МЕНЯЮТ данные (покупка) — каждому нужен свой свежий юзер, чтобы они не
-// мешали друг другу. Это tgUser / market / miniApp.
+// Tests that CHANGE data (buying) each need their own fresh user, so they don't step on each
+// other. That's tgUser / market / miniApp.
 
-// Общий юзер «только смотрит». Создаётся один раз и живёт, пока живёт воркер.
+// Shared "read-only" user. Created once and lives as long as the worker.
 type WorkerFixtures = {
-  readUser: TgUser; // сам юзер (Reader_0, Reader_1, ...)
-  readMarket: MarketApi; // API-клиент от его имени
+  readUser: TgUser; // the user itself (Reader_0, Reader_1, ...)
+  readMarket: MarketApi; // API client acting as it
 };
 
-// Свежий юзер «меняет данные». Новый на каждый тест.
+// Fresh "writes data" user. New for every test.
 type Fixtures = {
-  tgUser: TgUser; // сам юзер (Tester_<случайное число>)
-  market: MarketApi; // API-клиент от его имени
-  miniApp: MiniAppPage; // Mini App, открытый от его имени
-  readMiniApp: MiniAppPage; // Mini App, открытый от имени общего «читателя»
+  tgUser: TgUser; // the user itself (Tester_<random number>)
+  market: MarketApi; // API client acting as it
+  miniApp: MiniAppPage; // Mini App opened as it
+  readMiniApp: MiniAppPage; // Mini App opened as the shared reader
 };
 
 export const test = base.extend<Fixtures, WorkerFixtures>({
-  // === Общий юзер «только смотрит» ===
+  // === Shared "read-only" user ===
 
-  // Один юзер на воркер. id берём заведомо большим, чтобы не совпасть со свежими юзерами.
+  // One user per worker. id is deliberately large so it can't clash with the fresh users.
   readUser: [
     async ({}, use, workerInfo) => {
       const id = 1_000_000_000 + workerInfo.workerIndex;
@@ -59,30 +59,30 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
     { scope: 'worker' },
   ],
 
-  // API-клиент от имени общего юзера. Подписываем initData один раз на воркер и переиспользуем.
+  // API client acting as the shared user. Sign initData once per worker and reuse it.
   readMarket: [
     async ({ playwright, readUser }, use) => useSignedMarket(playwright, readUser, use),
     { scope: 'worker' },
   ],
 
-  // Mini App, открытый от имени общего юзера.
+  // Mini App opened as the shared user.
   readMiniApp: async ({ page, readUser }, use) => {
     await installTelegramWebApp(page, readUser);
     await use(new MiniAppPage(page));
   },
 
-  // === Свежий юзер «меняет данные» ===
+  // === Fresh "writes data" user ===
 
-  // Новый случайный юзер на каждый тест.
+  // A new random user for every test.
   tgUser: async ({}, use) => {
     const id = crypto.randomInt(100_000, 999_999_999);
     await use({ id, first_name: `Tester_${id}` });
   },
 
-  // API-клиент от имени свежего юзера. Контекст закрываем после теста.
+  // API client acting as the fresh user. Dispose the context after the test.
   market: async ({ playwright, tgUser }, use) => useSignedMarket(playwright, tgUser, use),
 
-  // Mini App под свежим юзером.
+  // Mini App as the fresh user.
   miniApp: async ({ page, tgUser }, use) => {
     await installTelegramWebApp(page, tgUser);
     await use(new MiniAppPage(page));

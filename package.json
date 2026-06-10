@@ -10,6 +10,16 @@
   ],
   "scripts": {
     "backend": "npm run dev -w apps/backend",
-    "bot": "npm run dev -w apps/bot"
+    "bot": "npm run dev -w apps/bot",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs,json,md,yml,yaml,html,css}": "prettier --write"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
+    "prettier": "^3.5.0"
   }
 }

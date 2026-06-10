@@ -1,17 +1,9 @@
 import { test, type Locator } from '@playwright/test';
 
 /**
- * Element-level actions over Playwright locators. Every mutating action wraps the native call
- * in a `test.step` with a human-readable label, so the report reads as intent ("Клик по
- * элементу «кнопка Купить»") and the raw Playwright call nests inside.
- *
- * The element description is passed at call time by the Page Object — the locator itself stays
- * a plain `Locator`. `test.step` (not allure's) so steps show in BOTH the Playwright HTML
- * report and Allure. Query helpers return values and stay step-free (they read, not act).
- *
- * Each action's `options` mirrors the native Locator method's options exactly (via
- * `Parameters<...>`), so nothing is lost — `delay`, `position`, `clickCount`, `modifiers`,
- * `noWaitAfter`, etc. all still pass through.
+ * Thin wrappers over Locator actions — each wraps the call in a named `test.step` (report reads
+ * as intent). The Page Object passes the description; `options` mirrors native Playwright options.
+ * Query helpers just return values, no step.
  */
 
 // --- Mutations (reported as steps) ---

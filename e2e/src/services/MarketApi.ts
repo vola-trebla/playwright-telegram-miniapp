@@ -138,8 +138,10 @@ export class MarketApi {
   }
 
   createInvoice(amountTon: number, provider: Provider): Promise<InvoiceResponse> {
-    return this.validated(`Создать инвойс на ${amountTon} TON (${provider})`, InvoiceResponseSchema, () =>
-      this.createInvoiceResponse(amountTon, provider),
+    return this.validated(
+      `Создать инвойс на ${amountTon} TON (${provider})`,
+      InvoiceResponseSchema,
+      () => this.createInvoiceResponse(amountTon, provider),
     );
   }
 
@@ -150,7 +152,9 @@ export class MarketApi {
   }
 
   getTx(txId: string): Promise<TxResponse> {
-    return this.validated('Получить статус расчёта', TxResponseSchema, () => this.getTxResponse(txId));
+    return this.validated('Получить статус расчёта', TxResponseSchema, () =>
+      this.getTxResponse(txId),
+    );
   }
 
   /** Convenience: id of the first still-listed gift (fails if none left). */

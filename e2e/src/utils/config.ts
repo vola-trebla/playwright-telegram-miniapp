@@ -2,12 +2,8 @@ import 'dotenv/config';
 import { z } from 'zod';
 
 /**
- * Single source of truth for environment-driven configuration.
- *
- * Locally the suite falls back to the backend on localhost so it runs out of the box.
- * On CI (`process.env.CI`) there is NO implicit fallback: every value must be provided
- * explicitly, and a missing/malformed one fails fast with a descriptive error before
- * a single test starts.
+ * Env-driven config (single source of truth). Locally it falls back to localhost so it runs out of
+ * the box; on CI there are NO fallbacks — a missing/bad var fails fast before any test starts.
  */
 const isCI = !!process.env.CI;
 

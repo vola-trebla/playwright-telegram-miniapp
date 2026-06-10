@@ -1,11 +1,7 @@
 import { test, type Page } from '@playwright/test';
 import { timeouts } from '@data/constants';
 
-/**
- * Page-level actions (navigation, waits). Same shape as elementActions: every action wraps the
- * native Playwright call in a `test.step` with a human-readable label. Mirrors
- * site-test/helper/pageActions.ts. Default timeouts come from @data/constants, not magic numbers.
- */
+/** Page-level actions (nav/waits), each wrapped in a named `test.step`. Default timeouts from @data/constants. */
 
 export function goTo(page: Page, url: string): Promise<unknown> {
   return test.step(`Открываем страницу «${url}»`, () => page.goto(url));

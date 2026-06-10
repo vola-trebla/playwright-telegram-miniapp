@@ -264,7 +264,11 @@ app.post('/api/invoice/:id/pay', auth, (req: AuthedRequest, res: Response) => {
   }
   invoice.status = 'paid';
   balances.set(invoice.userId, getBalance(invoice.userId) + invoice.amountTon);
-  res.json({ invoiceId: invoice.id, status: invoice.status, balanceTon: getBalance(invoice.userId) });
+  res.json({
+    invoiceId: invoice.id,
+    status: invoice.status,
+    balanceTon: getBalance(invoice.userId),
+  });
 });
 
 // --- Settlement (semi on-chain): poll until the tx settles ---

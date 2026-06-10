@@ -52,8 +52,9 @@ the API and leave a test green on bad data.
 `ZodError`. Types derive from the schema via `z.infer`, so no hand-written interface
 diverges from validation.
 
-**Consequences.** Contract testing without type/validation drift. (Currently inline
-in specs; promoted to a `MarketApi` service layer next — see Roadmap.)
+**Consequences.** Contract testing without type/validation drift. Schemas live in
+`src/services/schemas.ts`, applied by the `MarketApi` service layer (§9); error bodies are
+validated too (`ErrorResponseSchema`), so a changed error shape can't slip past a status check.
 
 ## 5. Concurrency is asserted, not assumed
 
@@ -91,30 +92,87 @@ chosen per action instead of being a fixed `Class.method`.
 
 ## 8. Projects per execution environment
 
-**Context.** API/WS tests and (future) Mini App UI tests have different needs.
+**Context.** API/WS tests and Mini App UI tests have different needs.
 
 **Decision.** Slice by Playwright project. `api` needs no browser. A `web` project for
-Mini App UI (mocked `Telegram.WebApp` + signed initData) is added alongside, not bolted
-into `api`.
+Mini App UI (mocked `Telegram.WebApp` + signed initData) runs alongside, not bolted into `api`.
 
 **Consequences.** Each slice carries only what it needs; `--project=api` is the fast,
 browserless gate.
+
+## 9. Service layer: raw vs assertive, one `validated()` helper
+
+**Context.** Specs shouldn't hand-roll HTTP, status checks and parsing — but negative paths
+still need the raw response to inspect.
+
+**Decision.** `src/services/MarketApi.ts` gives two flavours per endpoint: `*Response` (raw
+`APIResponse`, no assertions) for edge/negative specs, and an assertive helper routed through
+one private `validated(step, schema, call)` — named `test.step`, asserts `ok()`, zod-parses.
+A new endpoint is a one-liner.
+
+**Consequences.** No per-endpoint boilerplate; all HTTP lives in the service, specs stay about
+behavior.
+
+## 10. Two user lanes: shared reader vs fresh writer
+
+**Context.** Auth is a per-request signed initData (no login to amortise), but write tests
+mutate shared backend state.
+
+**Decision.** Read-only tests share one **worker-scoped** `readUser`/`readMarket` (signed
+context built once per worker); mutating tests get a **fresh per-test** `tgUser`/`market`. Id
+ranges are disjoint so the two never collide.
+
+**Consequences.** No phantom user per read; writes stay isolated. Not `storageState` — there's
+no session to save; the split is about data isolation, expressed through fixture scope.
+
+## 11. Money correctness modeled end-to-end
+
+**Context.** A marketplace's real risk is money — double-charge, lost funds, races, settlement
+drift — and it lives on the backend.
+
+**Decision.** The in-memory backend models balance + deposit/withdraw, buy debiting (`402` on
+insufficient), a Stars/TON top-up **invoice intent**, **idempotency keys**, and async
+**settlement** (`pending → settled`). Specs assert each: balance deltas, idempotent retry,
+N-buyer concurrency, poll-until-settled.
+
+**Consequences.** The suite's weight sits where the product's risk is (a testing-trophy shape),
+not on UI.
+
+## 12. The Telegram seam is mocked, not real
+
+**Context.** Outside Telegram a Mini App has no `window.Telegram.WebApp` and no `initData`; CI
+has no Telegram client.
+
+**Decision.** `src/utils/telegram-mock.ts` blocks the real SDK and injects
+`window.Telegram.WebApp` + signed initData via `addInitScript` before page scripts run.
+`page.evaluate` reads back what the app actually saw (identity, recorded `HapticFeedback`); a
+`recordWebSocket` helper asserts server `sold` pushes event-driven.
+
+**Consequences.** The Mini App runs headless in a plain browser; the Telegram-native contract is
+tested at the JS seam, not by automating native UI.
+
+## 13. CI: fast gate on PRs, heavy e2e post-merge
+
+**Context.** This is a test-framework repo; heavy/flaky e2e gating every PR just stalls the author.
+
+**Decision.** Only **lint + typecheck** run on PRs. The **e2e** suites (API on a plain runner, UI
+in the official Playwright Docker image) run on push-to-main, nightly, and on demand —
+parallelised across workers since tests are isolated. Prettier is applied at commit time (husky
+at the repo root), not as a CI check.
+
+**Consequences.** Authors merge behind a fast static gate; full e2e validates post-merge without
+blocking anyone.
 
 ---
 
 ## Roadmap
 
-Deliberately not built yet — boundaries are a conscious choice, captured so they read as
-intent, not oversight.
+Conscious boundaries, not oversight.
 
-- **`MarketApi` service layer.** Move the inline HTTP + zod parsing into a service with
-  raw vs assertive method flavours (raw `APIResponse` for negatives, validated data for
-  happy paths), steps via `test.step`.
-- **WebSocket assertions.** Subscribe to `/ws`, act over REST, assert the pushed `sold`
-  event arrives — the real-time seam as a test.
-- **Mini App UI tests.** Playwright drives `apps/backend/public` with `addInitScript`
-  mocking `window.Telegram.WebApp` and a signed `initData` — UI E2E without Telegram.
-- **Cross-system E2E.** A GramJS userbot (real test account, `StringSession`) asserts a
-  WEB/Mini App action triggers the expected bot reaction — the product's headline scenario.
-- **Workflows to repo root.** These workflows live under `e2e/.github`; for the monorepo
-  they should move to the repository-root `.github/workflows` to actually run on GitHub.
+- **Cross-system E2E via a GramJS userbot.** Today `cross-system.spec.ts` asserts the backend
+  _dispatches_ the Telegram notification; a real userbot (test account, `StringSession`) driving
+  `/start` → `web_app` button → real initData and then asserting the bot's reaction is the
+  product's headline scenario, still to build.
+- **Telegram-native UI contract.** MainButton / `openInvoice` as contracts against the SDK mock
+  — assert the app configures them and reacts to their callbacks — the native seam not yet
+  exercised.

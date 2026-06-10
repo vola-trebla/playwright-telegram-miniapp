@@ -1,7 +1,4 @@
-/**
- * Centralised timeouts, by name instead of magic numbers at call sites.
- * Mirrors site-test/data/constants.ts — used by the action/page helpers and the WS recorder.
- */
+/** Named timeouts instead of magic numbers — used by the action/page helpers and the WS recorder. */
 export const timeouts = {
   HUNDRED_MS: 100,
   ONE_SECOND: 1_000,

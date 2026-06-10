@@ -1,8 +1,7 @@
 import { test, expect } from '@fixtures';
 
-// page.evaluate(fn) runs fn INSIDE the browser (the page's JS world) and returns a
-// JSON-serialisable result back to the test. These two checks reach into that world:
-// one reads the Telegram context the app sees, the other a side effect the app triggers.
+// page.evaluate(fn) runs fn inside the browser and returns a JSON-serialisable result. These two
+// checks reach into that world: the Telegram context the app sees, and a side effect it triggers.
 
 test.describe('Browser-side checks via page.evaluate @web', () => {
   test('the webview sees the injected Telegram user (not just the DOM)', async ({
@@ -12,8 +11,7 @@ test.describe('Browser-side checks via page.evaluate @web', () => {
   }) => {
     await readMiniApp.open();
 
-    // Read window.Telegram.WebApp.initDataUnsafe.user from inside the page — this is what the
-    // app reads at startup, before any rendering. Deeper than asserting on #who text.
+    // What the app saw at startup — deeper than asserting on the #who DOM text.
     const user = await page.evaluate(() => {
       const w = window as unknown as {
         Telegram: { WebApp: { initDataUnsafe: { user: { id: number; first_name: string } } } };
@@ -31,9 +29,8 @@ test.describe('Browser-side checks via page.evaluate @web', () => {
   }) => {
     await readMiniApp.open();
 
-    // Call the app's own buy() with a non-existent id from inside the browser → backend 404 →
-    // the app fires tg.HapticFeedback.notificationOccurred('error') (app.js). The mock records
-    // every haptic call into window.__haptics, which we read back here.
+    // Call the app's own buy() with a bad id → backend 404 → app fires an error haptic, which the
+    // mock records into window.__haptics for us to read back.
     await page.evaluate(() => {
       const w = window as unknown as { buy: (id: string) => Promise<void> };
       return w.buy('does-not-exist');
