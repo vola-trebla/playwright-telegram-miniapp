@@ -8,13 +8,13 @@ test.describe('tgUser isolation', () => {
   });
 
   test('/api/me возвращает того же юзера что в fixture', async ({ market, tgUser }) => {
-    const { user } = await market.getMe();
+    const { user } = await market.account.getMe();
     expect(user.id).toBe(tgUser.id);
   });
 
   test('после покупки soldTo = наш юзер', async ({ market, tgUser }) => {
     const id = '10'; // dedicated gift so it never sweeps into other specs' gifts
-    const { gift } = await market.buy(id);
+    const { gift } = await market.catalog.buy(id);
     expect(gift.soldTo).toBe(tgUser.first_name);
     expect(gift.status).toBe('sold');
   });

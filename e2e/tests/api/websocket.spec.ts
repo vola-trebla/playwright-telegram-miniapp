@@ -35,13 +35,13 @@ test.describe('Live events over WebSocket @api @realtime', () => {
     });
 
     try {
-      const { gifts } = await market.getGifts();
+      const { gifts } = await market.catalog.getGifts();
       const target = [...gifts].reverse().find((g) => g.status === 'listed');
       expect(target, 'need a listed gift to sell').toBeTruthy();
       const id = target!.id;
 
       const sold = waitForMessage(ws, (m) => m.type === 'sold' && m.id === id);
-      await market.buy(id);
+      await market.catalog.buy(id);
 
       const event = await sold;
       expect(event.buyer).toBe('WsTester');
