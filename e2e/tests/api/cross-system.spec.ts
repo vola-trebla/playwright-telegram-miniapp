@@ -12,9 +12,9 @@ const head = (id: number, name: string): Record<string, string> => ({
 test.describe('Cross-system reaction @api @cross-system', () => {
   test('a purchase dispatches a Telegram notification to the buyer', async ({ market }) => {
     const id = '4'; // dedicated gift
-    const { gift } = await market.buy(id);
+    const { gift } = await market.catalog.buy(id);
 
-    const { notifications } = await market.getNotifications();
+    const { notifications } = await market.account.getNotifications();
     const note = notifications.find((n) => n.text.includes(gift.name));
 
     expect(note, 'expected a notification for the bought gift').toBeTruthy();
