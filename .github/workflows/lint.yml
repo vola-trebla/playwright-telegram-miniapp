@@ -1,0 +1,35 @@
+name: Lint & typecheck
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: ESLint + tsc
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0 # skip git hooks install on CI
+      # config.ts is imported by playwright.config; on CI it needs these (no fallbacks).
+      MARKET_URL: http://localhost:3100
+      TEST_BOT_TOKEN: test-bot-token
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      # The gate only needs the e2e toolchain (ESLint, typescript-eslint, tsc) — no backend,
+      # no browser.
+      - name: Install e2e deps
+        run: npm ci
+        working-directory: e2e
+
+      - name: Lint + typecheck
+        run: npm run check
+        working-directory: e2e

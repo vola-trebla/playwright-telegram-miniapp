@@ -17,6 +17,7 @@ jobs:
     env:
       MARKET_URL: http://localhost:3100
       TEST_BOT_TOKEN: test-bot-token
+      HUSKY: 0 # skip git hooks install on CI
     steps:
       - uses: actions/checkout@v4
 

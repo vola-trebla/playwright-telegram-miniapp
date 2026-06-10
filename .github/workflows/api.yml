@@ -14,12 +14,13 @@ jobs:
       # On CI the test config has no fallbacks — provide them explicitly.
       MARKET_URL: http://localhost:3100
       TEST_BOT_TOKEN: test-bot-token
+      HUSKY: 0 # skip git hooks install on CI
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: |
             package-lock.json
