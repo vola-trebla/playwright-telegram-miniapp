@@ -1,5 +1,8 @@
 # Playwright × Telegram Mini App — E2E testing demo
 
+[![API tests](https://github.com/vola-trebla/playwright-telegram-miniapp/actions/workflows/api.yml/badge.svg)](https://github.com/vola-trebla/playwright-telegram-miniapp/actions/workflows/api.yml)
+[![E2E UI tests](https://github.com/vola-trebla/playwright-telegram-miniapp/actions/workflows/e2e-ui.yml/badge.svg)](https://github.com/vola-trebla/playwright-telegram-miniapp/actions/workflows/e2e-ui.yml)
+
 A self-contained demo of how to **test a Telegram Mini App end-to-end** with Playwright +
 TypeScript. It ships a small but realistic product to test against — a TON-marketplace-style
 Mini App (buy "gifts"/NFTs) — and a test suite that exercises the parts that make Mini Apps

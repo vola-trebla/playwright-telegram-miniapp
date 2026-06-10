@@ -1,0 +1,41 @@
+name: E2E UI tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ui:
+    name: Mini App UI (Chromium)
+    runs-on: ubuntu-latest
+    # Official Playwright image — browsers + OS deps preinstalled. Tag MUST match the
+    # @playwright/test version in e2e/package.json (1.60.0), so it finds the bundled browsers.
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+    env:
+      MARKET_URL: http://localhost:3100
+      TEST_BOT_TOKEN: test-bot-token
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install backend deps (root workspaces)
+        run: npm ci
+
+      - name: Install e2e deps
+        run: npm ci
+        working-directory: e2e
+
+      # No `playwright install` — the browsers already live in the image.
+      - name: Run Mini App UI tests
+        run: npm run test:web
+        working-directory: e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-ui
+          path: e2e/playwright-report/
+          retention-days: 7
