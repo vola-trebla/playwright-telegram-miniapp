@@ -16,8 +16,10 @@ export default defineConfig({
   // 4 matches the GitHub-hosted runner's cores; locally Playwright picks a sensible default.
   workers: process.env.CI ? 4 : undefined,
 
+  // `list` prints a line per test so CI logs are readable (blob/github/allure are files or
+  // failure-only annotations, which leave a successful run looking empty).
   reporter: process.env.CI
-    ? [['blob'], ['github'], ['allure-playwright']]
+    ? [['list'], ['blob'], ['github'], ['allure-playwright']]
     : [['html', { open: 'never' }], ['list'], ['allure-playwright']],
 
   // Boot the product under test with STRICT initData validation (no DEV_MODE bypass),
