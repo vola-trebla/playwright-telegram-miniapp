@@ -8,6 +8,7 @@
     "test:api": "playwright test --project=api",
     "test:web": "playwright test --project=web",
     "test:smoke": "playwright test --grep @smoke",
+    "test:smoke:api": "playwright test --project=api --grep @smoke",
     "test:security": "playwright test tests/api/security-edge.spec.ts tests/api/init-data.spec.ts",
     "test:ws": "playwright test tests/api/websocket.spec.ts",
     "test:race": "playwright test tests/api/market.spec.ts",

@@ -155,13 +155,14 @@ tested at the JS seam, not by automating native UI.
 
 **Context.** This is a test-framework repo; heavy/flaky e2e gating every PR just stalls the author.
 
-**Decision.** Only **lint + typecheck** run on PRs. The **e2e** suites (API on a plain runner, UI
-in the official Playwright Docker image) run on push-to-main, nightly, and on demand —
-parallelised across workers since tests are isolated. Prettier is applied at commit time (husky
-at the repo root), not as a CI check.
+**Decision.** PRs run **lint + typecheck** plus a **browserless API smoke** (`@smoke`-tagged:
+auth 401, catalog contract, buy race, balance, invoice — seconds, not minutes). The full **e2e**
+suites (API on a plain runner, UI in the official Playwright Docker image) run on push-to-main,
+nightly, and on demand — parallelised across workers since tests are isolated. Prettier is
+applied at commit time (husky at the repo root), not as a CI check.
 
-**Consequences.** Authors merge behind a fast static gate; full e2e validates post-merge without
-blocking anyone.
+**Consequences.** Authors merge behind a fast gate that still catches a broken contract; full
+e2e validates post-merge without blocking anyone.
 
 ---
 

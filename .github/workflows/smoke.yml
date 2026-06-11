@@ -1,0 +1,52 @@
+name: Smoke gate
+
+# The carve-out from "no e2e on PRs" (see ADR-13): a handful of @smoke-tagged API tests —
+# auth 401, catalog contract, buy race, balance read, invoice create — run in seconds,
+# browserless, and catch a broken contract before merge. The heavy suites stay post-merge.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: API smoke
+    runs-on: ubuntu-latest
+    env:
+      # Not secrets — throwaway test values; the backend boots in test mode against this
+      # dummy token and the tests sign initData with the same one.
+      MARKET_URL: http://localhost:3100
+      TEST_BOT_TOKEN: test-bot-token
+      HUSKY: 0 # skip git hooks install on CI
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            e2e/package-lock.json
+
+      - name: Install backend deps (root workspaces)
+        run: npm ci
+
+      - name: Install e2e deps
+        run: npm ci
+        working-directory: e2e
+
+      # No browser needed — the `api` project drives Playwright's request context.
+      # Playwright boots the backend itself (webServer in playwright.config.ts).
+      - name: Run API smoke tests
+        run: npm run test:smoke:api
+        working-directory: e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: e2e/playwright-report/
+          retention-days: 7

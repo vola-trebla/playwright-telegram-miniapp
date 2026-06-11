@@ -7,7 +7,7 @@ const BASE = config.marketBaseUrl;
 const TOKEN = config.testBotToken;
 
 test.describe('initData auth @api @security', () => {
-  test('missing initData is rejected with 401', async ({ request }) => {
+  test('missing initData is rejected with 401 @smoke', async ({ request }) => {
     const res = await request.get(`${BASE}/api/me`);
     expect(res.status()).toBe(401);
   });

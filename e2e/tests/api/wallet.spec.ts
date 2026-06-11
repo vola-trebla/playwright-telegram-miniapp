@@ -2,7 +2,7 @@ import { test, expect } from '@fixtures';
 import { giftIds } from '@data/gift-allocation';
 
 test.describe('Wallet @api @money', () => {
-  test('fresh user has a positive starting balance', async ({ market }) => {
+  test('fresh user has a positive starting balance @smoke', async ({ market }) => {
     const { balanceTon } = await market.wallet.getBalance();
     expect(balanceTon).toBeGreaterThan(0);
   });
