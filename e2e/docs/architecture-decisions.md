@@ -164,6 +164,36 @@ applied at commit time (husky at the repo root), not as a CI check.
 **Consequences.** Authors merge behind a fast gate that still catches a broken contract; full
 e2e validates post-merge without blocking anyone.
 
+## 14. Zod response validation instead of a contract-testing tool (no Pact)
+
+**Context.** "Should we add contract testing?" is a fair question for an API suite. Pact-style
+consumer-driven contracts shine when producer and consumer live in different repos/teams and
+need to evolve independently against a broker.
+
+**Decision.** No Pact. This is a monorepo with one consumer; every response — happy path and
+error bodies alike — already parses through a Zod schema at the service layer, so a contract
+breach fails the suite immediately with a precise diff. The schemas ARE the consumer contract.
+If a spec artifact is ever needed, generate OpenAPI from the existing Zod schemas rather than
+maintaining a second source of truth.
+
+**Consequences.** Zero extra infrastructure (broker, provider verification); contract drift is
+caught on every run. The trade-off — no independent producer-side verification — only starts to
+matter if the backend is developed by a separate team, which is the explicit trigger to revisit.
+
+## 15. Flaky tests: zero retries locally, retries + quarantine on CI
+
+**Context.** Retries can either expose flakiness or institutionalise it, depending on where they
+run.
+
+**Decision.** Locally `retries: 0` — a flaky test fails in your face while the context is fresh.
+On CI `retries: 2`, and a pass-on-retry is reported as `flaky`, not buried as green. The
+process: a test flagged flaky twice in a week gets tagged `@quarantine` (excluded from the main
+run via `--grep-invert`) and an issue; it returns only with the root cause fixed — no
+deleting-by-retrying. Allure history over nightly runs is the trend monitor.
+
+**Consequences.** The main signal stays trustworthy: red means broken, green means working, and
+flake is a visible, tracked queue instead of background noise.
+
 ---
 
 ## Roadmap
