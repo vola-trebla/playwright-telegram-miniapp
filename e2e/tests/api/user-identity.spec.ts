@@ -1,4 +1,5 @@
 import { test, expect } from '@fixtures';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('tgUser isolation', () => {
   test('каждый тест получает уникального юзера', async ({ tgUser }) => {
@@ -13,8 +14,7 @@ test.describe('tgUser isolation', () => {
   });
 
   test('после покупки soldTo = наш юзер', async ({ market, tgUser }) => {
-    const id = '10'; // dedicated gift so it never sweeps into other specs' gifts
-    const { gift } = await market.catalog.buy(id);
+    const { gift } = await market.catalog.buy(giftIds.userIdentity);
     expect(gift.soldTo).toBe(tgUser.first_name);
     expect(gift.status).toBe('sold');
   });

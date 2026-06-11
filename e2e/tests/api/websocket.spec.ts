@@ -2,12 +2,11 @@ import { test, expect } from '@fixtures';
 import { WebSocket, type RawData } from 'ws';
 import { config } from '@utils/config';
 import { timeouts } from '@data/constants';
+import { SoldEventSchema, type SoldEvent } from '@services/schemas';
 
 test.use({ tgUser: { id: 7, first_name: 'WsTester' } });
 
 const wsUrl = `${config.marketBaseUrl.replace(/^http/, 'ws')}/ws`;
-
-type SoldEvent = { type: string; id: string; buyer: string };
 
 function waitForMessage(
   ws: WebSocket,
@@ -17,11 +16,10 @@ function waitForMessage(
   return new Promise<SoldEvent>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('no matching WS message in time')), timeoutMs);
     ws.on('message', (raw: RawData) => {
-      const data = JSON.parse(raw.toString()) as SoldEvent;
-      if (match(data)) {
-        clearTimeout(timer);
-        resolve(data);
-      }
+      const frame = SoldEventSchema.safeParse(JSON.parse(raw.toString()));
+      if (!frame.success || !match(frame.data)) return;
+      clearTimeout(timer);
+      resolve(frame.data);
     });
   });
 }
@@ -40,7 +38,7 @@ test.describe('Live events over WebSocket @api @realtime', () => {
       expect(target, 'need a listed gift to sell').toBeTruthy();
       const id = target!.id;
 
-      const sold = waitForMessage(ws, (m) => m.type === 'sold' && m.id === id);
+      const sold = waitForMessage(ws, (m) => m.id === id);
       await market.catalog.buy(id);
 
       const event = await sold;

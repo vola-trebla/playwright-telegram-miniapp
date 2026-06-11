@@ -1,11 +1,12 @@
 import { test, expect } from '@fixtures';
 import { config } from '@utils/config';
 import { buildSignedInitData } from '@utils/sign-init-data';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Concurrency @api @money', () => {
   test('N buyers race for one gift: exactly one wins, the rest get 409', async ({ playwright }) => {
     const N = 5;
-    const giftId = '15';
+    const giftId = giftIds.concurrencyRace;
 
     // N independent signed clients (distinct identities, disjoint id range).
     const contexts = await Promise.all(

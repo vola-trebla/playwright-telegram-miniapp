@@ -1,4 +1,5 @@
 import { test, expect } from '@fixtures';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Mini App UI @web', () => {
   test('identifies the Telegram user from initData @smoke', async ({ readMiniApp, readUser }) => {
@@ -9,7 +10,7 @@ test.describe('Mini App UI @web', () => {
 
   test('buying a gift flips its card to SOLD', async ({ miniApp }) => {
     await miniApp.open();
-    const id = '3';
+    const id = giftIds.webBuy;
     const btn = miniApp.buyButton(id);
 
     await expect(btn).toBeEnabled();

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { config } from '@utils/config';
 import { buildSignedInitData } from '@utils/sign-init-data';
+import { MeResponseSchema } from '@services/schemas';
 
 const BASE = config.marketBaseUrl;
 const TOKEN = config.testBotToken;
@@ -24,8 +25,8 @@ test.describe('initData auth @api @security', () => {
       headers: { 'x-telegram-init-data': initData },
     });
     expect(res.status()).toBe(200);
-    const body = (await res.json()) as { user: { id: number } };
-    expect(body.user.id).toBe(42);
+    const { user } = MeResponseSchema.parse(await res.json());
+    expect(user.id).toBe(42);
   });
 
   test('a valid signature for a DIFFERENT token is rejected (wrong bot)', async ({ request }) => {
