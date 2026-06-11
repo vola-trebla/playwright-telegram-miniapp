@@ -7,7 +7,7 @@ test.describe('Market API @api @market', () => {
     expect(gifts.length).toBeGreaterThan(0);
   });
 
-  test('two buyers, one gift: exactly one wins, the other gets 409', async ({ market }) => {
+  test('two buyers, one gift: exactly one wins, the other gets 409 @smoke', async ({ market }) => {
     const id = await market.catalog.firstListedGiftId();
 
     const [first, second] = await Promise.all([

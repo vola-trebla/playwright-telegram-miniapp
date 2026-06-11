@@ -3,7 +3,7 @@ import { ErrorResponseSchema } from '@services/schemas';
 import { giftIds } from '@data/gift-allocation';
 
 test.describe('Payments / top-up @api @money', () => {
-  test('invoice carries the right amount, provider and intent link', async ({ market }) => {
+  test('invoice carries the right amount, provider and intent link @smoke', async ({ market }) => {
     const invoice = await market.payments.createInvoice(750, 'stars');
     expect(invoice.amountTon).toBe(750);
     expect(invoice.provider).toBe('stars');
