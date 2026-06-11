@@ -1,5 +1,6 @@
 import { test, expect } from '@fixtures';
 import { ErrorResponseSchema } from '@services/schemas';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Payments / top-up @api @money', () => {
   test('invoice carries the right amount, provider and intent link', async ({ market }) => {
@@ -42,7 +43,7 @@ test.describe('Payments / top-up @api @money', () => {
     await market.wallet.withdraw(balanceTon); // → 0
     const invoice = await market.payments.createInvoice(5000, 'ton');
     await market.payments.payInvoice(invoice.invoiceId); // balance → 5000
-    const { gift, balanceAfter } = await market.catalog.buy('17'); // Retro Boombox, 110 TON
+    const { gift, balanceAfter } = await market.catalog.buy(giftIds.paymentsTopUp);
     expect(balanceAfter).toBe(5000 - gift.priceTon);
   });
 });

@@ -1,4 +1,5 @@
 import { test, expect } from '@fixtures';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Market API @api @market', () => {
   test('gifts list matches the contract @smoke', async ({ readMarket }) => {
@@ -24,9 +25,9 @@ test.describe('Market API @api @market', () => {
   });
 
   test('after buying, the gift reads back as sold to me', async ({ market, tgUser }) => {
-    await market.catalog.buy('9');
+    await market.catalog.buy(giftIds.marketSoldReadback);
     const { gifts } = await market.catalog.getGifts();
-    const gift = gifts.find((g) => g.id === '9');
+    const gift = gifts.find((g) => g.id === giftIds.marketSoldReadback);
     expect(gift?.status).toBe('sold');
     expect(gift?.soldTo).toBe(tgUser.first_name);
   });

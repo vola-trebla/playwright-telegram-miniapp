@@ -5,4 +5,5 @@ export * from './account';
 export * from './wallet';
 export * from './payments';
 export * from './tx';
+export * from './ws';
 export * from './error';

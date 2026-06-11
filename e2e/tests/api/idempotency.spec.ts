@@ -1,12 +1,13 @@
 import { test, expect } from '@fixtures';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Idempotency @api @money', () => {
   test('a retried buy with the same key charges exactly once', async ({ market }) => {
     const key = `idem-${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
     const before = (await market.wallet.getBalance()).balanceTon;
 
-    const first = await market.catalog.buy('14', { idempotencyKey: key });
-    const second = await market.catalog.buy('14', { idempotencyKey: key });
+    const first = await market.catalog.buy(giftIds.idempotencySameKey, { idempotencyKey: key });
+    const second = await market.catalog.buy(giftIds.idempotencySameKey, { idempotencyKey: key });
 
     // The replay returns the first result verbatim — same gift, same balance snapshot.
     expect(second.gift.id).toBe(first.gift.id);
@@ -16,9 +17,10 @@ test.describe('Idempotency @api @money', () => {
   });
 
   test('a different key re-evaluates (no stale cached success)', async ({ market }) => {
-    await market.catalog.buy('6', { idempotencyKey: 'key-A' }); // sells gift 6
+    const id = giftIds.idempotencyFreshKey;
+    await market.catalog.buy(id, { idempotencyKey: 'key-A' }); // sells the gift
     // Same gift, NEW key → the request is processed fresh and sees it already sold.
-    const res = await market.catalog.buyResponse('6', { idempotencyKey: 'key-B' });
+    const res = await market.catalog.buyResponse(id, { idempotencyKey: 'key-B' });
     expect(res.status()).toBe(409);
   });
 });

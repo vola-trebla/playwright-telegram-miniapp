@@ -3,6 +3,8 @@ import { config } from '@utils/config';
 import { installTelegramWebApp } from '@utils/telegram-mock';
 import { recordWebSocket } from '@utils/ws-recorder';
 import { MiniAppPage } from '@pages/MiniAppPage';
+import { SoldEventSchema } from '@services/schemas';
+import { giftIds } from '@data/gift-allocation';
 
 test.describe('Realtime across clients @web @realtime', () => {
   test("one client's buy flips the gift to SOLD on another, live", async ({ browser }) => {
@@ -21,7 +23,7 @@ test.describe('Realtime across clients @web @realtime', () => {
     await alice.open();
     await bob.open();
 
-    const id = '5'; // dedicated gift — others use 3 (web), 4/7/8 (cross-system), 9 (market), 10 (user-identity)
+    const id = giftIds.realtimeSold;
 
     try {
       await expect(bob.buyButton(id)).toBeEnabled();
@@ -30,7 +32,8 @@ test.describe('Realtime across clients @web @realtime', () => {
       await expect(bob.buyButton(id)).toBeDisabled();
       await expect(bob.buyButton(id)).toContainText('SOLD');
 
-      const sold = await bobWs.waitForFrame((m) => m.type === 'sold' && m.id === id);
+      const frame = await bobWs.waitForFrame((m) => m.type === 'sold' && m.id === id);
+      const sold = SoldEventSchema.parse(frame);
       expect(sold.buyer).toBe('Alice');
     } finally {
       await ctxA.close();
