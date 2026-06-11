@@ -3,7 +3,7 @@ import { test, expect } from '@fixtures';
 test.describe('Mini App catalog @web', () => {
   test('renders every gift with a name and a TON price @smoke', async ({ readMiniApp }) => {
     await readMiniApp.open();
-    await expect(readMiniApp.cards).toHaveCount(20);
+    await expect(readMiniApp.cards).toHaveCount(22);
     await expect(readMiniApp.cards.first().locator('.name')).not.toBeEmpty();
     await expect(readMiniApp.cards.first().locator('.price')).toContainText('TON');
   });

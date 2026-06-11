@@ -27,7 +27,7 @@ interface Gift {
 }
 
 // Seed catalog. Rarity counts (used by tests): legendary 2 (ids 1 & 6), the rest epic/rare/common.
-// Total 20 — extra gifts (13–20) give dedicated ids to the money/concurrency specs.
+// Total 22 — extra gifts (13–22) give dedicated ids to the money/concurrency/security specs.
 const gifts: Gift[] = [
   { id: '1', name: 'Plush Pepe', rarity: 'legendary', priceTon: 1200, status: 'listed' },
   { id: '2', name: "Durov's Cap", rarity: 'epic', priceTon: 820, status: 'listed' },
@@ -49,6 +49,8 @@ const gifts: Gift[] = [
   { id: '18', name: 'Bubble Gum', rarity: 'common', priceTon: 12, status: 'listed' },
   { id: '19', name: 'Astro Helmet', rarity: 'epic', priceTon: 600, status: 'listed' },
   { id: '20', name: 'Golden Ticket', rarity: 'rare', priceTon: 130, status: 'listed' },
+  { id: '21', name: 'Cosmic Yo-Yo', rarity: 'rare', priceTon: 45, status: 'listed' },
+  { id: '22', name: 'Mint Ice Cube', rarity: 'common', priceTon: 9, status: 'listed' },
 ];
 
 // Outbound Telegram notifications produced by cross-system reactions (e.g. a sale).

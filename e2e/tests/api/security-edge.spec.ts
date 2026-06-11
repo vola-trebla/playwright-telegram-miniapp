@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { config } from '@utils/config';
 import { buildSignedInitData } from '@utils/sign-init-data';
 import { ErrorResponseSchema } from '@services/schemas';
+import { giftIds } from '@data/gift-allocation';
 
 const BASE = config.marketBaseUrl;
 const TOKEN = config.testBotToken;
@@ -24,7 +25,11 @@ test.describe('Security & edge @api @security @edge', () => {
   }) => {
     const res = await request.post(`${BASE}/api/buy`, {
       headers: auth(freshUser()),
-      data: { id: '2', soldTo: 'Victim', user: { id: 1, first_name: 'Victim' } },
+      data: {
+        id: giftIds.securityImpersonation,
+        soldTo: 'Victim',
+        user: { id: 1, first_name: 'Victim' },
+      },
     });
     expect(res.ok()).toBeTruthy();
     expect((await res.json()).gift.soldTo).toBe('Mallory');
